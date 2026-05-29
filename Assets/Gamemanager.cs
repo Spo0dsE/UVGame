@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
@@ -18,7 +19,9 @@ public class Gamemanager : MonoBehaviour
     public GameObject persoon3;
     public GameObject persoon4;
     public GameObject persoon5;
-  
+
+    public List<GameObject> Mensenactief;
+
     [Header("Programma")]
     public GameObject foto;
     public TMP_Text beschrijving;
@@ -27,8 +30,11 @@ public class Gamemanager : MonoBehaviour
 
     [Header("beschrijving")]
     public string[] beschrijvingen;
-    private int index;
-    public float typespeed;
+
+    [Header("hoe veel goeie en slechte keuzes")]
+    public float goeiekeuzes;
+    public TMP_Text ending;
+
 
     private int Welkpersoonzijnweop;
     private bool tutorialread;
@@ -37,6 +43,7 @@ public class Gamemanager : MonoBehaviour
 
     public void Programeclick()
     {
+      
         
         Window.SetActive(true);
         // dit zet het programa aan
@@ -68,52 +75,57 @@ public class Gamemanager : MonoBehaviour
 
     private void Start()
     {
-        beschrijving.text = string.Empty;
+        beschrijving.text = beschrijvingen[0];
     }
-    private void StartDialouge()
-    {
-        index = 0;
-        StartCoroutine(Typeline());
-    }
+    
 
-    void nextline()
-    {
-        if(index <  beschrijving.text.Length - 1)
-        {
-            index++;
-            beschrijving.text = string.Empty;
-            StartCoroutine (Typeline());
-
-        }
-    }
+  
    public void Jaknop()
-    {
-        if (beschrijving.text == beschrijvingen[index])
-        {
-
-            nextline();
-            StartDialouge();
-
-        }
+    { 
         Welkpersoonzijnweop += 1;
 
-    }
+          foreach (GameObject obj in Mensenactief)
+            {
+  
+                if (obj.activeInHierarchy)
+                {
+                    if (obj.tag == ("Evil"))
+                    {
+                    goeiekeuzes -= 1;
+                    }
+                }
+            if (obj.activeInHierarchy)
+            {
+                if (obj.tag == ("good"))
+                {
+                    goeiekeuzes += 1;
+                }
+            }
+        }
+        
+    
+}
     public void Neeknop()
     {
-        if (beschrijving.text == beschrijvingen[index])
-        {
-            nextline();
-        }
         Welkpersoonzijnweop += 1;
-    }
-    IEnumerator Typeline()
-    {
-        foreach (char c in beschrijvingen[index].ToCharArray())
+        foreach (GameObject obj in Mensenactief)
         {
-            beschrijving.text += c;
-            yield return new WaitForSeconds(typespeed);
-        }
 
+            if (obj.activeInHierarchy)
+            {
+                if (obj.tag == ("good"))
+                {
+                    goeiekeuzes -= 1;
+                }
+            }
+            if (obj.activeInHierarchy)
+            {
+                if (obj.tag == ("Evil"))
+                {
+                    goeiekeuzes += 1;
+                }
+            }
+        }
     }
     public void Update()
     {
@@ -127,6 +139,8 @@ public class Gamemanager : MonoBehaviour
                 persoon3.SetActive(false);
                 persoon4.SetActive(false);
                 persoon5.SetActive(false);
+                beschrijving.text = beschrijvingen[0];
+
 
             }
             if (Welkpersoonzijnweop == 1)
@@ -136,6 +150,7 @@ public class Gamemanager : MonoBehaviour
                 persoon3.SetActive(false);
                 persoon4.SetActive(false);
                 persoon5.SetActive(false);
+                beschrijving.text = beschrijvingen[1];
             }
             if (Welkpersoonzijnweop == 2)
             {
@@ -144,6 +159,7 @@ public class Gamemanager : MonoBehaviour
                 persoon1.SetActive(false);
                 persoon4.SetActive(false);
                 persoon5.SetActive(false);
+                beschrijving.text = beschrijvingen[2];
             }
             if (Welkpersoonzijnweop == 3)
             {
@@ -152,6 +168,7 @@ public class Gamemanager : MonoBehaviour
                 persoon3.SetActive(false);
                 persoon1.SetActive(false);
                 persoon5.SetActive(false);
+                beschrijving.text = beschrijvingen[3];
             }
             if (Welkpersoonzijnweop == 4)
             {
@@ -160,6 +177,22 @@ public class Gamemanager : MonoBehaviour
                 persoon3.SetActive(false);
                 persoon4.SetActive(false);
                 persoon1.SetActive(false);
+                beschrijving.text = beschrijvingen[4];
+            }
+            if (Welkpersoonzijnweop == 5)
+            {
+                if (goeiekeuzes >= 4f)
+                {
+                    ending.text = "you win";
+                    Window.SetActive(false);
+
+                }
+                else
+
+                {
+                    ending.text = "you lose";
+                    Window.SetActive(false);
+                }
             }
             // dit zet alle fotos uit en aan
         }
@@ -180,5 +213,7 @@ public class Gamemanager : MonoBehaviour
         // aan alle andere blokjes van set active voeg persoon6.SetActive(false) too
 
 
-    }
+
+
+}
 }
